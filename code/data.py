@@ -8,18 +8,22 @@ import numpy as np
 
 
 def preprocess_image(image):
-    image = tf.io.decode_jpeg(image, channels=3)
+    image = tf.image.decode_image(image)
+    print(image.shape)
+    print(image.dtype)
+    print(np.unique(image.numpy()))
     image = tf.cast(image, tf.float32)
     image /= 255.0  # normalize to [0,1] range
+
     return image
 
 
 def load_and_preprocess_image(path):
     image = tf.io.read_file(path)
-    #print(path)
-    #img = plt.imread(path)
-    #plt.imshow(img)
-    #plt.show()
+    print(path)
+    img = plt.imread(path)
+    plt.imshow(img)
+    plt.show()
     return preprocess_image(image)
 
 
@@ -37,9 +41,6 @@ class AmazonDataset:
         for sample in self.samples:
             if not exists(sample[1]):
                 print("WARNING: {} does not exist".format(sample[1]))
-        
-        self.img_ds = tf.data.Dataset.from_tensor_slices([s[1] for s in self.samples])
-        self.img_ds = self.img_ds.map(load_and_preprocess_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
 
     def __len__(self):
         return len(self.samples)
@@ -68,11 +69,9 @@ class AmazonDataset:
 
 
 if __name__ == "__main__":
-    image_dir = 'rainforest/fixed-train-jpg/'
-    labels_csv = 'rainforest/train_v3.csv'
+    image_dir = '/home/hadrien/Downloads/rainforest/train-jpg/'
+    labels_csv = '/home/hadrien/Downloads/rainforest/train_v2.csv'
     dataset = AmazonDataset(image_dir, labels_csv)
 
-    print("Dataset len: {}".format(len(dataset)))
-    #dataset.get_tf_version()
-    for x in dataset.img_ds.batch(5):
-        print(x)
+    print(len(dataset))
+    dataset.get_tf_version()
