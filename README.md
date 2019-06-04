@@ -11,3 +11,5 @@ PIP_CONFIG_FILE
 ## Dataset
 
 Kaggle Amazon rainforest
+
+[Data loader tutorial](https://www.tensorflow.org/alpha/tutorials/load_data/images)
