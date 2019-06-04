@@ -4,7 +4,6 @@ from os.path import join, exists
 import tensorflow as tf
 
 import matplotlib.pyplot as plt
-import numpy as np
 from sklearn.preprocessing import MultiLabelBinarizer
 
 
