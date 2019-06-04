@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mgermain/ECODSEdataset-fun-time.svg?branch=master)](https://travis-ci.org/mgermain/ECODSEdataset-fun-time)
+
 # Fun Time
 
 ## Tensorflow
