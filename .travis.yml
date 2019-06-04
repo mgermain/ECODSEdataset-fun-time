@@ -11,6 +11,7 @@ install:
   - pip install tf-nightly-2.0-preview comet-ml
   - pip install scipy --upgrade
   - pip install cython --upgrade
+  - pip install matplotlib --upgrade
   - pip install -e . --no-deps
 env:
   - TEST_SUITE=static
