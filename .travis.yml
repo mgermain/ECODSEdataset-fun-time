@@ -7,9 +7,10 @@ install:
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  - conda install python=3.6
+  - conda install python=3.6 ipython matplotlib numpy wheel flake8 scikit-learn pytest pytest-cov
   - pip install tf-nightly-2.0-preview comet-ml
-  - conda install matplotlib scikit-learn flake8 pytest pytest-cov
+  - pip install scipy --upgrade
+  - pip install cython --upgrade
   - pip install -e . --no-deps
 env:
   - TEST_SUITE=static
