@@ -8,7 +8,7 @@ from sklearn.preprocessing import MultiLabelBinarizer
 
 
 def preprocess_image(image):
-    image = tf.io.decode_jpeg(image, channels=3)
+    image = tf.io.decode_jpeg(image, dct_method="INTEGER_ACCURATE")
     image = tf.cast(image, tf.float32)
     image /= 255.0  # normalize to [0,1] range
     return image
