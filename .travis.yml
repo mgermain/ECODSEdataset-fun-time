@@ -1,0 +1,18 @@
+language: python
+
+install:
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda install python=3.6 ipython matplotlib numpy wheel flake8 scikit-learn pytest pytest-cov
+  - pip install tf-nightly-2.0-preview comet-ml
+  - pip install -e . --no-deps
+env:
+  - TEST_SUITE=static
+  - TEST_SUITE=unit
+script:
+  - if [[ $TEST_SUITE == "static" ]]; then flake8 --ignore E501,F; fi
+  - if [[ $TEST_SUITE == "unit" ]]; then pytest --cov=./; fi

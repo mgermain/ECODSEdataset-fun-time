@@ -4,7 +4,7 @@ from os.path import join, exists
 import tensorflow as tf
 
 import matplotlib.pyplot as plt
-import numpy as np
+from sklearn.preprocessing import MultiLabelBinarizer
 
 
 def preprocess_image(image):
@@ -17,63 +17,59 @@ def preprocess_image(image):
 
 def load_and_preprocess_image(path):
     image = tf.io.read_file(path)
-    #print(path)
-    #img = plt.imread(path)
-    #plt.imshow(img)
-    #plt.show()
     return preprocess_image(image)
 
 
-class AmazonDataset:
-    def __init__(self, image_dir, labels_csv):
-        self.samples = []
-        with open(labels_csv) as csvfile:
-            reader = csv.reader(csvfile, delimiter=',')
-            for i, row in enumerate(reader):
-                if i < 1:  # Skip first row as it is column names
-                    continue
-                self.samples.append((row[0], join(image_dir, '{}.jpg'.format(row[0])), row[1].split(' ')))
+def get_dataset(image_dir, labels_csv):
+    samples = []
+    with open(labels_csv) as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        for i, row in enumerate(reader):
+            if i < 1:  # Skip first row as it is column names
+                continue
+            samples.append((row[0], join(image_dir, '{}.jpg'.format(row[0])), row[1].split(' ')))
 
-        # Check all images exists
-        for sample in self.samples:
-            if not exists(sample[1]):
-                print("WARNING: {} does not exist".format(sample[1]))
-        
-        self.img_ds = tf.data.Dataset.from_tensor_slices([s[1] for s in self.samples])
-        self.img_ds = self.img_ds.map(load_and_preprocess_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    # Check all images exists and create labels list
+    labels = []
+    for sample in samples:
+        if not exists(sample[1]):
+            print("WARNING: {} does not exist".format(sample[1]))
 
-    def __len__(self):
-        return len(self.samples)
+        for label in sample[2]:
+            if label not in labels:
+                labels.append(label)
 
-    def get_tf_version(self):
-        img_ds = tf.data.Dataset.from_tensor_slices([s[1] for s in self.samples])
-        image = load_and_preprocess_image([s[1] for s in self.samples][0])
+    mb = MultiLabelBinarizer(classes=labels)
+    mb.fit(labels)
+
+    # Transform all labels
+    transformed_labels = []
+    for sample in samples:
+        transformed_labels.append(mb.transform([sample[2]]).squeeze())
+
+    # Create tensorflow dataset
+    img_ds = tf.data.Dataset.from_tensor_slices([s[1] for s in samples])
+    img_ds = img_ds.map(load_and_preprocess_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+
+    label_ds = tf.data.Dataset.from_tensor_slices(tf.cast(transformed_labels, tf.int64))
+
+    img_label_ds = tf.data.Dataset.zip((img_ds, label_ds))
+
+    return img_label_ds
+
+
+if __name__ == "__main__":
+    image_dir = '/home/hadrien/Downloads/rainforest/fixed-train-jpg/'
+    labels_csv = '/home/hadrien/Downloads/rainforest/train_v2.csv'
+    dataset = get_dataset(image_dir, labels_csv)
+
+    for n, sample in enumerate(dataset.take(4)):
+        image, label = sample[0], sample[1]
+        image = image.numpy()
         plt.imshow(image)
         plt.grid(False)
         plt.xticks([])
         plt.yticks([])
+        plt.title(label)
         plt.show()
         plt.close()
-        img_ds = img_ds.map(load_and_preprocess_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-
-        for n, image in enumerate(img_ds.take(4)):
-            image = image.numpy()
-            print(image.shape)
-            print(np.unique(image))
-            plt.imshow(image)
-            plt.grid(False)
-            plt.xticks([])
-            plt.yticks([])
-            plt.show()
-            plt.close()
-
-
-if __name__ == "__main__":
-    image_dir = 'rainforest/fixed-train-jpg/'
-    labels_csv = 'rainforest/train_v3.csv'
-    dataset = AmazonDataset(image_dir, labels_csv)
-
-    print("Dataset len: {}".format(len(dataset)))
-    #dataset.get_tf_version()
-    for x in dataset.img_ds.batch(5):
-        print(x)
