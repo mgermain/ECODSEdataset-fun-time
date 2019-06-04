@@ -7,7 +7,7 @@ install:
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  - conda install python=3.6 ipython scipy numpy wheel flake8
+  - conda install python=3.6 ipython scipy numpy wheel flake8 scikit-learn pytest pytest-cov
   - pip install tf-nightly-2.0-preview comet-ml
   - pip install -e . --no-deps
 env:
