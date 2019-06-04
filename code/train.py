@@ -9,7 +9,7 @@ def train_loop(dataset, model, optimizer):
         with tf.GradientTape() as tape:
             predictions = model(x)
             loss = tf.keras.metrics.MSE(y, predictions)
-        gradients = tape.gradient(loss, model.trainable_variables)        
+        gradients = tape.gradient(loss, model.trainable_variables)
         optimizer.apply_gradients(zip(gradients, model.trainable_variables))
         print(loss)
 
@@ -23,14 +23,13 @@ def fit_loop(dataset, model):
     model.fit(dataset, epochs=20, steps_per_epoch=2)
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     image_dir = '../../rainforest/fixed-train-jpg/'
     labels_csv = '../../rainforest/train_v3.csv'
     dataset = data.get_dataset(image_dir, labels_csv)
     model = models.testMLP(10, 9)
     optimizer = tf.keras.optimizers.Adam(lr=0.001)
     fit_loop(dataset, model)
-    nepoch = 2 
-    #for _ in range(nepoch):
+    nepoch = 2
+    # for _ in range(nepoch):
     #    train_loop(dataset, model, optimizer)
-    
