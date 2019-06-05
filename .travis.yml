@@ -7,9 +7,14 @@ install:
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  - conda install python=3.6 ipython matplotlib numpy wheel flake8 scikit-learn pytest pytest-cov
-  - pip install tf-nightly-2.0-preview comet-ml
-  - pip install -e . --no-deps
+  - conda install python=3.6
+  - if [[ $TEST_SUITE == "static" ]]; then conda install flake8; fi
+  - if [[ $TEST_SUITE == "unit" ]]; then conda install ipython matplotlib numpy wheel scikit-learn pytest pytest-cov; fi
+  - if [[ $TEST_SUITE == "unit" ]]; then pip install tf-nightly-2.0-preview comet-ml; fi
+  - if [[ $TEST_SUITE == "unit" ]]; then pip install scipy --upgrade; fi
+  - if [[ $TEST_SUITE == "unit" ]]; then pip install cython --upgrade; fi
+  - if [[ $TEST_SUITE == "unit" ]]; then export LD_LIBRARY_PATH="$HOME/miniconda/lib"; fi
+  - if [[ $TEST_SUITE == "unit" ]]; then pip install -e . --no-deps; fi
 env:
   - TEST_SUITE=static
   - TEST_SUITE=unit
