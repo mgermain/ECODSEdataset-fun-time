@@ -27,7 +27,7 @@ if __name__ == "__main__":
     image_dir = '../../rainforest/fixed-train-jpg/'
     labels_csv = '../../rainforest/train_v3.csv'
     dataset = data.get_dataset(image_dir, labels_csv)
-    model = models.testMLP(10, 9)
+    model = models.TestMLP(10, 9)
     optimizer = tf.keras.optimizers.Adam(lr=0.001)
     fit_loop(dataset, model)
     nepoch = 2
