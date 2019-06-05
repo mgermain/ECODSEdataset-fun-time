@@ -22,10 +22,6 @@ class SimpleCNN(tf.keras.Model):
             tf.keras.layers.MaxPool2D(),
             tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(outsize)
-        ])
-
-    def call(self, inputs):
-        return self.model(inputs)
 
 
 if __name__ == "__main__":
