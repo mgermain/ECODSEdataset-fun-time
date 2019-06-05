@@ -11,7 +11,7 @@ def preprocess_image(image):
     image = tf.io.decode_jpeg(image, channels=3)
     image = tf.cast(image, tf.float32)
     image /= 255.0  # normalize to [0,1] range
-    image = tf.reshape(image, (-1, 256*256*3))
+    # image = tf.reshape(image, (-1, 256*256*3))
     return image
 
 
