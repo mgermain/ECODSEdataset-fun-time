@@ -1,9 +1,9 @@
 import tensorflow as tf
 
 
-class testMLP(tf.keras.Model):
+class TestMLP(tf.keras.Model):
     def __init__(self, hiddensize, outsize):
-        super(testMLP, self).__init__(self)
+        super(TestMLP, self).__init__(self)
         self.model = tf.keras.Sequential([
             # tf.keras.layers.Reshape((256*256*3,)),
             tf.keras.layers.Dense(hiddensize, input_shape=(256*256*3,), activation=tf.nn.relu),
@@ -16,6 +16,6 @@ class testMLP(tf.keras.Model):
 
 
 if __name__ == "__main__":
-    testmodel = testMLP(5, 10, 2)
+    testmodel = TestMLP(5, 10, 2)
     testin = tf.random.uniform([7, 5])
     print(testmodel(testin))
