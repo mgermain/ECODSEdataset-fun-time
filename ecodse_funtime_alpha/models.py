@@ -24,6 +24,9 @@ class SimpleCNN(tf.keras.Model):
             tf.keras.layers.Dense(outsize)
         ])
 
+    def call(self, inputs):
+        return self.model(inputs)
+
 
 if __name__ == "__main__":
     testmodel = TestMLP(5, 2)

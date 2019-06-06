@@ -54,12 +54,12 @@ def get_dataset(image_dir, labels_csv):
 
     img_label_ds = tf.data.Dataset.zip((img_ds, label_ds))
 
-    return img_label_ds
+    return img_label_ds, len(samples)
 
 
 if __name__ == "__main__":
-    image_dir = '/home/hadrien/Downloads/rainforest/fixed-train-jpg/'
-    labels_csv = '/home/hadrien/Downloads/rainforest/train_v2.csv'
+    image_dir = '../../rainforest/fixed-train-jpg/'
+    labels_csv = '../..//rainforest/train_v3.csv'
     dataset = get_dataset(image_dir, labels_csv)
 
     for n, sample in enumerate(dataset.take(4)):
