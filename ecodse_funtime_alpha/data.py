@@ -57,18 +57,21 @@ def get_dataset(image_dir, labels_csv):
     return img_label_ds
 
 
-if __name__ == "__main__":
-    image_dir = '/home/hadrien/Downloads/rainforest/fixed-train-jpg/'
-    labels_csv = '/home/hadrien/Downloads/rainforest/train_v2.csv'
-    dataset = get_dataset(image_dir, labels_csv)
+def get_labels_distribution(labels_csv):
+    sample_labels = []
+    with open(labels_csv) as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        for i, row in enumerate(reader):
+            if i < 1:  # Skip first row as it is column names
+                continue
+            sample_labels.append(row[1].split(' '))
 
-    for n, sample in enumerate(dataset.take(4)):
-        image, label = sample[0], sample[1]
-        image = image.numpy()
-        plt.imshow(image)
-        plt.grid(False)
-        plt.xticks([])
-        plt.yticks([])
-        plt.title(label)
-        plt.show()
-        plt.close()
+    labels = {}
+    for sample in sample_labels:
+        for label in sample:
+            if label not in labels:
+                labels[label] = 1
+            else:
+                labels[label] += 1
+
+    return labels
