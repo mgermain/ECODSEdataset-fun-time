@@ -14,7 +14,7 @@ def train_loop(dataset, model, optimizer):
         optimizer.apply_gradients(zip(gradients, model.trainable_variables))
         print(loss)
 
-        
+
 def fit_loop(dataset, model, optimizer, nepoch, batchsize):
     nstep = len(list(dataset)) // batchsize
     dataset = dataset.shuffle(12)
