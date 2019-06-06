@@ -61,16 +61,15 @@ def get_dataset(image_dir, labels_csv):
     samples = []
     with open(labels_csv) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
+        reader.next()  # Skip first row as it is column names
         for i, row in enumerate(reader):
-            if i < 1:  # Skip first row as it is column names
-                continue
-            samples.append((row[0], join(image_dir, '{}.jpg'.format(row[0])), row[1].split(' ')))
+            samples.append((row[0], join(image_dir, f'{row[0]}.jpg'), row[1].split(' ')))
 
     # Check all images exists and create labels list
     labels = []
     for sample in samples:
         if not exists(sample[1]):
-            print("WARNING: {} does not exist".format(sample[1]))
+            print(f"WARNING: {sample[1]} does not exist")
 
         for label in sample[2]:
             if label not in labels:

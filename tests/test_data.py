@@ -2,7 +2,8 @@ import numpy as np
 from PIL import Image
 import pytest
 
-from ecodse_funtime_alpha.data import get_dataset, get_labels_distribution
+from ecodse_funtime_alpha.data import get_dataset
+from ecodse_funtime_alpha.data import get_labels_distribution
 
 
 class TestDataset(object):
