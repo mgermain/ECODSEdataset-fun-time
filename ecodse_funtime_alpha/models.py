@@ -21,7 +21,7 @@ class SimpleCNN(tf.keras.Model):
             tf.keras.layers.Conv2D(nkernel, kernelsize, input_shape=(256, 256, 3,), activation=tf.nn.relu),
             tf.keras.layers.MaxPool2D(),
             tf.keras.layers.Flatten(),
-            tf.keras.layers.Dense(outsize)
+            tf.keras.layers.Dense(outsize, activation=tf.nn.sigmoid)
         ])
 
     def call(self, inputs):
