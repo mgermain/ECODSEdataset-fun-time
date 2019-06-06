@@ -54,7 +54,8 @@ if __name__ == "__main__":
     args = argparser.parse_args()
 
     dataset = data.get_dataset(args.imagepath, args.labelpath)
-    model = models.SimpleCNN(args.kernels, args.ksize, 9)
+    # model = models.SimpleCNN(args.kernels, args.ksize, 9)
+    model = models.RetrainResnet()
     optimizer = tf.keras.optimizers.Adam(lr=args.lr)
     fit_loop(dataset, model, optimizer, args.nepoch, args.batchsize)
     # for _ in range(nepoch):
