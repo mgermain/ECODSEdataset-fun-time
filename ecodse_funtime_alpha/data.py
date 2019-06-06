@@ -3,11 +3,22 @@ from os.path import join, exists
 
 import tensorflow as tf
 
-import matplotlib.pyplot as plt
 from sklearn.preprocessing import MultiLabelBinarizer
 
 
 def preprocess_image(image):
+    """
+    Decode a jpeg and normalize it to [0, 1] range.
+
+    Parameters
+    ----------
+    image : tf tensor
+        Raw image as a tf tensor
+
+    Returns
+    -------
+        tf tensor in float32
+    """
     image = tf.io.decode_jpeg(image, dct_method="INTEGER_ACCURATE")
     image = tf.cast(image, tf.float32)
     image /= 255.0  # normalize to [0,1] range
@@ -15,11 +26,38 @@ def preprocess_image(image):
 
 
 def load_and_preprocess_image(path):
+    """
+    Read a jpeg and normalize it to [0, 1] range.
+
+    Parameters
+    ----------
+    path : str
+        Path to the jpeg to read
+
+    Returns
+    -------
+        tf tensor in float32
+    """
     image = tf.io.read_file(path)
     return preprocess_image(image)
 
 
 def get_dataset(image_dir, labels_csv):
+    """
+    Prepare the dataset for training. Images are normalized to [0, 1] range. Labels are n-hot encoded.
+
+    Parameters
+    ----------
+    image_dir : str
+        Path to the directory containing the images
+    labels_csv : str
+        Path to the csv file
+
+    Returns
+    -------
+        tf.data.ZipDataset
+            Elements of the dataset are structured (image, labels)
+    """
     samples = []
     with open(labels_csv) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
@@ -58,6 +96,19 @@ def get_dataset(image_dir, labels_csv):
 
 
 def get_labels_distribution(labels_csv):
+    """
+    Returns a dict where the keys are the labels and the values are the number of occurences.
+
+    Parameters
+    ----------
+    labels_csv : str
+        Path to the csv file
+
+    Returns
+    -------
+        dict
+    """
+    # Read the csv
     sample_labels = []
     with open(labels_csv) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
@@ -66,6 +117,7 @@ def get_labels_distribution(labels_csv):
                 continue
             sample_labels.append(row[1].split(' '))
 
+    # Count labels occurences
     labels = {}
     for sample in sample_labels:
         for label in sample:
