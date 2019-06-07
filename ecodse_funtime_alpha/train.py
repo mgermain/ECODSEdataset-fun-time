@@ -6,6 +6,8 @@ import tensorflow as tf
 import ecodse_funtime_alpha.data as data
 import ecodse_funtime_alpha.models as models
 
+tf.enable_eager_execution()
+
 
 def train_loop(dataset, model, optimizer):
     for x, y in dataset.batch(5):
