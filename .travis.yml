@@ -1,23 +1,24 @@
 language: python
 
-install:
+before_install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  - conda install python=3.6
+  - conda install python=3.7
+
+install:
   - if [[ $TEST_SUITE == "static" ]]; then conda install flake8; fi
-  - if [[ $TEST_SUITE == "unit" ]]; then conda install ipython matplotlib numpy wheel scikit-learn pytest pytest-cov pillow; fi
-  - if [[ $TEST_SUITE == "unit" ]]; then pip install tf-nightly-2.0-preview comet-ml; fi
-  - if [[ $TEST_SUITE == "unit" ]]; then pip install scipy --upgrade; fi
-  - if [[ $TEST_SUITE == "unit" ]]; then pip install cython --upgrade; fi
-  - if [[ $TEST_SUITE == "unit" ]]; then export LD_LIBRARY_PATH="$HOME/miniconda/lib"; fi
+  - if [[ $TEST_SUITE == "unit" ]]; then conda install ipython tensorflow=1.13 matplotlib numpy wheel scikit-learn pytest pytest-cov pillow; fi
+  - if [[ $TEST_SUITE == "unit" ]]; then pip install comet-ml; fi
   - if [[ $TEST_SUITE == "unit" ]]; then pip install -e . --no-deps; fi
+
 env:
   - TEST_SUITE=static
   - TEST_SUITE=unit
+
 script:
   - if [[ $TEST_SUITE == "static" ]]; then flake8 --ignore E501,F; fi
   - if [[ $TEST_SUITE == "unit" ]]; then pytest --cov=./; fi

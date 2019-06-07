@@ -1,6 +1,9 @@
 import tensorflow as tf
+
 import models
 import data
+
+tf.enable_eager_execution()
 
 
 def train_loop(dataset, model, optimizer):
@@ -24,8 +27,8 @@ def fit_loop(dataset, model, optimizer):
 
 
 if __name__ == "__main__":
-    image_dir = '../../rainforest/fixed-train-jpg/'
-    labels_csv = '../../rainforest/train_v3.csv'
+    image_dir = '/project/def-bengioy/hrb/rainforest/fixed-train-jpg/'
+    labels_csv = '/project/def-bengioy/hrb/rainforest/train_v2.csv'
     dataset = data.get_dataset(image_dir, labels_csv)
     # model = models.TestMLP(10, 9)
     model = models.SimpleCNN(10, 3, 9)
