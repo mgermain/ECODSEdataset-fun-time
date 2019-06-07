@@ -6,6 +6,8 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MultiLabelBinarizer
 
+tf.enable_eager_execution()
+
 
 def preprocess_image(image):
     image = tf.io.decode_jpeg(image, dct_method="INTEGER_ACCURATE")

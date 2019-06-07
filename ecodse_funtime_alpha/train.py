@@ -1,6 +1,9 @@
 import tensorflow as tf
+
 import models
 import data
+
+tf.enable_eager_execution()
 
 
 def train_loop(dataset, model, optimizer):
