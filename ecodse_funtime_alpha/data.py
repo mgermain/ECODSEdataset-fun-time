@@ -2,6 +2,7 @@ import csv
 from os.path import join, exists
 
 import tensorflow as tf
+import numpy as np
 
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MultiLabelBinarizer
