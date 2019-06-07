@@ -19,8 +19,8 @@ def train_loop(dataset, model, optimizer):
         print(loss)
 
 
-def fit_loop(dataset, lendataset, model, optimizer, nepoch, batchsize):
-    nstep = lendataset // batchsize
+def fit_loop(dataset, model, optimizer, nepoch, batchsize):
+    nstep = len(list(dataset)) // batchsize
     dataset = dataset.shuffle(12)  # 12 = buffer size
     dataset = dataset.repeat(nepoch)
     dataset = dataset.batch(batchsize)
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # model = models.TestMLP(10, 9)
     model = models.SimpleCNN(args.kernels, args.ksize, 9)
     optimizer = tf.keras.optimizers.Adam(lr=args.lr)
-    fit_loop(dataset, lendataset, model, optimizer, args.nepoch, args.batchsize)
+    fit_loop(dataset, model, optimizer, args.nepoch, args.batchsize)
     # nepoch = 2
     # for _ in range(nepoch):
     #     train_loop(dataset, model, optimizer)

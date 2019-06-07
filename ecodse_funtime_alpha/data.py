@@ -56,7 +56,7 @@ def get_dataset(image_dir, labels_csv):
 
     img_label_ds = tf.data.Dataset.zip((img_ds, label_ds))
 
-    return img_label_ds, len(samples)
+    return img_label_ds
 
 
 if __name__ == "__main__":
