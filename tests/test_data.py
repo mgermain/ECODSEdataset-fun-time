@@ -21,7 +21,7 @@ class TestDataset(object):
         image_dir = str(tmpdir.join("train-jpg"))
         labels_csv = str(tmpdir.join("train-jpg").join("train_v2.csv"))
 
-        dataset = get_dataset(image_dir, labels_csv)
+        dataset, _ = get_dataset(image_dir, labels_csv)
 
         img = np.zeros((256, 256, 3), dtype=np.uint8)
         img[128] = 255
@@ -34,7 +34,7 @@ class TestDataset(object):
         image_dir = str(tmpdir.join("train-jpg"))
         labels_csv = str(tmpdir.join("train-jpg").join("train_v2.csv"))
 
-        dataset = get_dataset(image_dir, labels_csv)
+        dataset, _ = get_dataset(image_dir, labels_csv)
 
         for i, sample in enumerate(dataset.take(2)):
             if i == 0:

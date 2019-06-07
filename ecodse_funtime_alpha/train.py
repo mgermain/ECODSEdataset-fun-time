@@ -1,7 +1,10 @@
-import tensorflow as tf
-import models
-import data
 import argparse
+import sys
+
+import tensorflow as tf
+
+import ecodse_funtime_alpha.data as data
+import ecodse_funtime_alpha.models as models
 
 
 def train_loop(dataset, model, optimizer):
@@ -25,7 +28,7 @@ def fit_loop(dataset, lendataset, model, optimizer, nepoch, batchsize):
     model.fit(dataset, epochs=nepoch, steps_per_epoch=nstep)
 
 
-def get_arg():
+def get_args(args):
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--imagepath', default='../../rainforest/fixed-train-jpg/',
                            help='path to image directory')
@@ -43,17 +46,15 @@ def get_arg():
                            help='Number of epoch for training')
     argparser.add_argument('--batchsize', default=32, type=int,
                            help='batch size (default=32)')
-    args = argparser.parse_args()
+    args = argparser.parse_args(args)
     return args
 
 
 if __name__ == "__main__":
-    args = get_arg()
+    args = get_args(sys.argv[1:])
     if args.seed > 0:
         tf.random.set_seed(args.seed)
-    print(args.imagepath, args.labelpath)
     dataset, lendataset = data.get_dataset(args.imagepath, args.labelpath)
-    print(len(list(dataset)))
     # model = models.TestMLP(10, 9)
     model = models.SimpleCNN(args.kernels, args.ksize, 9)
     optimizer = tf.keras.optimizers.Adam(lr=args.lr)
