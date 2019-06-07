@@ -15,6 +15,6 @@ setup(
         'Programming Language :: Python :: 3.6'
     ],
     packages=find_packages(exclude=['docs', 'tests']),
-    install_requires=['tf-nightly-2.0-preview', 'matplotlib', 'numpy', 'comet-ml', 'scikit-learn'],
+    install_requires=['tensorflow==1.13', 'matplotlib', 'numpy', 'comet-ml', 'scikit-learn'],
     extras_require={'test': ['flake8', 'pytest', 'pytest-cov', 'pillow']}
 )
