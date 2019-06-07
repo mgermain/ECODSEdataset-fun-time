@@ -51,6 +51,7 @@ def get_args(args):
 
 
 if __name__ == "__main__":
+    tf.enable_eager_execution()
     args = get_args(sys.argv[1:])
     if args.seed > 0:
         tf.random.set_seed(args.seed)
