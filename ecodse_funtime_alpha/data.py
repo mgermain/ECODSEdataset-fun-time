@@ -61,7 +61,7 @@ def get_dataset(image_dir, labels_csv):
     samples = []
     with open(labels_csv) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
-        reader.next()  # Skip first row as it is column names
+        next(reader)  # Skip first row as it is column names
         for i, row in enumerate(reader):
             samples.append((row[0], join(image_dir, f'{row[0]}.jpg'), row[1].split(' ')))
 
