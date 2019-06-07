@@ -1,3 +1,4 @@
+from collections import Counter
 import csv
 from os.path import join, exists
 
@@ -119,12 +120,6 @@ def get_labels_distribution(labels_csv):
             sample_labels.append(row[1].split(' '))
 
     # Count labels occurences
-    labels = {}
-    for sample in sample_labels:
-        for label in sample:
-            if label not in labels:
-                labels[label] = 1
-            else:
-                labels[label] += 1
+    labels = Counter(sample_labels)
 
     return labels
