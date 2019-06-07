@@ -7,9 +7,9 @@ before_install:
   - export PATH="$HOME/miniconda/bin:$PATH"
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda  
+  - conda install python=3.6
 
 install:
-  - conda install python=3.6
   - if [[ $TEST_SUITE == "static" ]]; then conda install flake8; fi
   - if [[ $TEST_SUITE == "unit" ]]; then conda install tensorflow=1.13 ipython matplotlib numpy wheel scikit-learn pytest pytest-cov pillow; fi
   - if [[ $TEST_SUITE == "unit" ]]; then pip install comet-ml; fi
