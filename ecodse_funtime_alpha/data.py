@@ -42,15 +42,15 @@ def get_dataset(image_dir, labels_csv):
     mb.fit(labels)
 
     # Transform all labels
-    transformed_labels = []
+    transformed_labels = np.array([])
     for sample in samples:
-        transformed_labels.append(mb.transform([sample[2]]).squeeze())
+        transformed_labels.append(tf.cast(mb.transform([sample[2]]).squeeze(), tf.int64))
 
     # Create tensorflow dataset
     img_ds = tf.data.Dataset.from_tensor_slices([s[1] for s in samples])
     img_ds = img_ds.map(load_and_preprocess_image, num_parallel_calls=tf.data.experimental.AUTOTUNE)
 
-    label_ds = tf.data.Dataset.from_tensor_slices(tf.cast(transformed_labels, tf.int64))
+    label_ds = tf.data.Dataset.from_tensor_slices(transformed_labels)
 
     img_label_ds = tf.data.Dataset.zip((img_ds, label_ds))
 
