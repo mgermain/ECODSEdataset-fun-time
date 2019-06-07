@@ -20,7 +20,7 @@ class SimpleCNN(tf.keras.Model):
     def __init__(self, nkernel, kernelsize, outsize):
         super(SimpleCNN, self).__init__(self)
         self.model = tf.keras.Sequential([
-            tf.keras.layers.Conv2D(nkernel, kernelsize, input_shape=(32, 32, 3,), activation=tf.nn.relu),
+            tf.keras.layers.Conv2D(nkernel, kernelsize, input_shape=(32, 32, 1,), activation=tf.nn.relu),
             tf.keras.layers.MaxPool2D(),
             tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(outsize)

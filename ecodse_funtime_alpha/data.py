@@ -60,8 +60,8 @@ def get_dataset(image_dir, labels_csv):
 
 
 if __name__ == "__main__":
-    image_dir = '/home/hadrien/Downloads/rainforest/fixed-train-jpg/'
-    labels_csv = '/home/hadrien/Downloads/rainforest/train_v2.csv'
+    image_dir = '/project/def-bengioy/hrb/rainforest/fixed-train-jpg/'
+    labels_csv = '/project/def-bengioy/hrb/rainforest/train_v2.csv'
     dataset = get_dataset(image_dir, labels_csv)
 
     for n, sample in enumerate(dataset.take(4)):
