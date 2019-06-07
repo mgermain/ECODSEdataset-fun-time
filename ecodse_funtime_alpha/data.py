@@ -120,6 +120,6 @@ def get_labels_distribution(labels_csv):
             sample_labels.append(row[1].split(' '))
 
     # Count labels occurences
-    labels = Counter(sample_labels)
+    labels = Counter(x for xs in sample_labels for x in set(xs))
 
     return labels
