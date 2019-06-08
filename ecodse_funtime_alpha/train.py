@@ -21,7 +21,7 @@ def train_loop(dataset, model, optimizer):
 
 def fit_loop(dataset, model, optimizer, nepoch, batchsize):
     nstep = len(list(dataset)) // batchsize
-    dataset = dataset.shuffle(12)  # 12 = buffer size
+    dataset = dataset.shuffle(buffer_size=12)
     dataset = dataset.repeat(nepoch)
     dataset = dataset.batch(batchsize)
     model.compile(optimizer=optimizer,
@@ -32,44 +32,57 @@ def fit_loop(dataset, model, optimizer, nepoch, batchsize):
 
 def get_args(args):
     argparser = argparse.ArgumentParser()
+    def_impath = '../../rainforest/fixed-train-jpg/'
     argparser.add_argument('--imagepath',
-                           default='../../rainforest/fixed-train-jpg/',
-                           help='path to image directory')
+                           default=def_impath,
+                           help=f'path to image directory (default {def_impath})')
+    def_labelpath = '../../rainforest/train_v3.csv'
     argparser.add_argument('--labelpath',
-                           default='../../rainforest/train_v3.csv',
-                           help='path to csv file for labels')
-    argparser.add_argument('--seed',
-                           default=-1,
+                           default=def_labelpath,
+                           help=f'path to csv file for labels (defautlt {def_labelpath})')
+    def_seed = -1
+    argparser.add_argument('-s',
+                           '--seed',
+                           default=def_seed,
                            type=int,
-                           help='Set random seed to this number (if >0)')
-    argparser.add_argument('--kernels',
-                           default=1,
+                           help=f'Set random seed to this number (default {def_seed})')
+    def_kernels = 1
+    argparser.add_argument('-k',
+                           '--kernels',
+                           default=def_kernels,
                            type=int,
-                           help='Number of kernels in the CNN')
-    argparser.add_argument('--ksize',
-                           default=1,
+                           help=f'Number of kernels in the CNN (default {def_kernels})')
+    def_ksize = 1
+    argparser.add_argument('-ks',
+                           '--ksize',
+                           default=def_ksize,
                            type=int,
-                           help='Size of kernels in CNN')
-    argparser.add_argument('--lr',
-                           default=0.1,
+                           help=f'Size of kernels in CNN (default {def_ksize})')
+    def_lr = 0.1
+    argparser.add_argument('-l',
+                           '--lr',
+                           default=def_lr,
                            type=float,
-                           help='Learning rate (default=0.1')
-    argparser.add_argument('--nepoch',
-                           default=1,
+                           help=f'Learning rate (default {def_lr})')
+    def_nepoch = 1
+    argparser.add_argument('-n',
+                           '--nepoch',
+                           default=def_nepoch,
                            type=int,
-                           help='Number of epoch for training')
-    argparser.add_argument('--batchsize',
-                           default=32,
+                           help=f'Number of epoch for training (default {def_nepoch})')
+    def_batch = 32
+    argparser.add_argument('-b',
+                           '--batchsize',
+                           default=def_batch,
                            type=int,
-                           help='batch size (default=32)')
+                           help=f'batch size (default {def_batch})')
     args = argparser.parse_args(args)
     return args
 
 
 if __name__ == "__main__":
     args = get_args(sys.argv[1:])
-    if args.seed > 0:
-        tf.random.set_seed(args.seed)
+    tf.random.set_seed(args.seed)
     dataset, lendataset = data.get_dataset(args.imagepath, args.labelpath)
     # model = models.TestMLP(10, 9)
     model = models.SimpleCNN(args.kernels, args.ksize, 9)
