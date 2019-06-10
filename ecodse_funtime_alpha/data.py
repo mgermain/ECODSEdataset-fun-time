@@ -65,7 +65,7 @@ def get_dataset(image_dir, labels_csv):
     with open(labels_csv) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         next(reader)  # Skip first row as it is column names
-        for i, row in enumerate(reader):
+        for row in reader:
             samples.append((row[0], join(image_dir, f'{row[0]}.jpg'), row[1].split(' ')))
 
     # Check all images exists and create labels list
@@ -114,9 +114,8 @@ def get_labels_distribution(labels_csv):
     sample_labels = []
     with open(labels_csv) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
-        for i, row in enumerate(reader):
-            if i < 1:  # Skip first row as it is column names
-                continue
+        next(reader)  # Skip first row as it is column names
+        for row in reader:
             sample_labels.append(row[1].split(' '))
 
     # Count labels occurences
