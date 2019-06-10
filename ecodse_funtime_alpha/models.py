@@ -35,5 +35,5 @@ if __name__ == "__main__":
     testin = tf.random.uniform([7, 256 * 256 * 3])
     print(testmodel(testin))
     testmodel2 = SimpleCNN(2, 2, 4)
-    testin2 = tf.random.uniform([10, 32, 32, 1])
+    testin2 = tf.random.uniform([10, 256, 256, 3])
     print(testmodel2(testin2))
