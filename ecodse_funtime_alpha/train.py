@@ -20,14 +20,13 @@ def train_loop(dataset, model, optimizer):
 
 
 def fit_loop(dataset, model, optimizer, nepoch, batchsize):
-    nstep = len(list(dataset)) // batchsize
     dataset = dataset.shuffle(buffer_size=12)
     dataset = dataset.repeat(nepoch)
     dataset = dataset.batch(batchsize)
     model.compile(optimizer=optimizer,
                   loss=tf.keras.losses.binary_crossentropy,
                   metrics=["accuracy"])
-    model.fit(dataset, epochs=nepoch, steps_per_epoch=nstep)
+    model.fit(dataset, epochs=nepoch, steps_per_epoch=2)
 
 
 def get_args(args):
@@ -46,13 +45,13 @@ def get_args(args):
                            default=def_seed,
                            type=int,
                            help=f'Set random seed to this number (default {def_seed})')
-    def_kernels = 1
+    def_kernels = 4
     argparser.add_argument('-k',
                            '--kernels',
                            default=def_kernels,
                            type=int,
                            help=f'Number of kernels in the CNN (default {def_kernels})')
-    def_ksize = 1
+    def_ksize = 2
     argparser.add_argument('-ks',
                            '--ksize',
                            default=def_ksize,
@@ -70,7 +69,7 @@ def get_args(args):
                            default=def_nepoch,
                            type=int,
                            help=f'Number of epoch for training (default {def_nepoch})')
-    def_batch = 32
+    def_batch = 4
     argparser.add_argument('-b',
                            '--batchsize',
                            default=def_batch,
@@ -82,8 +81,8 @@ def get_args(args):
 
 if __name__ == "__main__":
     args = get_args(sys.argv[1:])
-    tf.random.set_seed(args.seed)
-    dataset, lendataset = data.get_dataset(args.imagepath, args.labelpath)
+    tf.random.set_random_seed(args.seed)
+    dataset = data.get_dataset(args.imagepath, args.labelpath)
     # model = models.TestMLP(10, 9)
     model = models.SimpleCNN(args.kernels, args.ksize, 9)
     optimizer = tf.keras.optimizers.Adam(lr=args.lr)
