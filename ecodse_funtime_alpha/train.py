@@ -9,8 +9,8 @@ import ecodse_funtime_alpha.models as models
 tf.enable_eager_execution()
 
 
-def train_loop(dataset, model, optimizer):
-    for x, y in dataset.batch(5):
+def train_loop(dataset, model, optimizer, batchsize):
+    for x, y in dataset.batch(batchsize):
         with tf.GradientTape() as tape:
             predictions = model(tf.squeeze(x))
             loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=tf.cast(y, tf.float32), logits=predictions)
@@ -20,13 +20,14 @@ def train_loop(dataset, model, optimizer):
 
 
 def fit_loop(dataset, model, optimizer, nepoch, batchsize):
+    nstep = tf.data.experimental.cardinality(dataset).numpy() // batchsize
     dataset = dataset.shuffle(buffer_size=12)
     dataset = dataset.repeat(nepoch)
     dataset = dataset.batch(batchsize)
     model.compile(optimizer=optimizer,
                   loss=tf.keras.losses.binary_crossentropy,
                   metrics=["accuracy"])
-    model.fit(dataset, epochs=nepoch, steps_per_epoch=2)
+    model.fit(dataset, epochs=nepoch, steps_per_epoch=nstep)
 
 
 def get_args(args):
