@@ -1,4 +1,5 @@
 import argparse
+import math
 import sys
 
 import tensorflow as tf
@@ -20,10 +21,14 @@ def train_loop(dataset, model, optimizer):
 
 
 def fit_loop(dataset, model, optimizer, nepoch, batchsize):
-    nstep = tf.data.experimental.cardinality(dataset).numpy() // batchsize
-    dataset = dataset.shuffle(buffer_size=12)
-    dataset = dataset.repeat(nepoch)
+    # number of steps in an epoch is len(dataset) / batchsize (math.ceil for the remainder)
+    nstep = math.ceil(tf.data.experimental.cardinality(dataset).numpy() / batchsize)
+    # shuffling the dataset before mini-batches to shuffle elements and not mini-batches
+    dataset = dataset.shuffle(buffer_size=10 * batchsize)
+    # split into mini-batches
     dataset = dataset.batch(batchsize)
+    # repeat for multiple epochs; the earlier shuffle is different for each epoch
+    dataset = dataset.repeat(nepoch)
     model.compile(optimizer=optimizer,
                   loss=tf.keras.losses.binary_crossentropy,
                   metrics=["accuracy"])
