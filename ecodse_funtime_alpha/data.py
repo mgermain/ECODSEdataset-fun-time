@@ -1,15 +1,27 @@
+from collections import Counter
 import csv
 from os.path import join, exists
 
 import tensorflow as tf
 
-import matplotlib.pyplot as plt
 from sklearn.preprocessing import MultiLabelBinarizer
 
 tf.enable_eager_execution()
 
 
 def preprocess_image(image):
+    """
+    Decode a jpeg and normalize it to [0, 1] range.
+
+    Parameters
+    ----------
+    image : tf tensor
+        Raw image as a tf tensor
+
+    Returns
+    -------
+        tf tensor in float32
+    """
     image = tf.io.decode_jpeg(image, dct_method="INTEGER_ACCURATE")
     image = tf.cast(image, tf.float32)
     image /= 255.0  # normalize to [0,1] range
@@ -17,24 +29,50 @@ def preprocess_image(image):
 
 
 def load_and_preprocess_image(path):
+    """
+    Read a jpeg and normalize it to [0, 1] range.
+
+    Parameters
+    ----------
+    path : str
+        Path to the jpeg to read
+
+    Returns
+    -------
+        tf tensor in float32
+    """
     image = tf.io.read_file(path)
     return preprocess_image(image)
 
 
 def get_dataset(image_dir, labels_csv):
+    """
+    Prepare the dataset for training. Images are normalized to [0, 1] range. Labels are n-hot encoded.
+
+    Parameters
+    ----------
+    image_dir : str
+        Path to the directory containing the images
+    labels_csv : str
+        Path to the csv file
+
+    Returns
+    -------
+        tf.data.ZipDataset
+            Elements of the dataset are structured (image, labels)
+    """
     samples = []
     with open(labels_csv) as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
-        for i, row in enumerate(reader):
-            if i < 1:  # Skip first row as it is column names
-                continue
-            samples.append((row[0], join(image_dir, '{}.jpg'.format(row[0])), row[1].split(' ')))
+        next(reader)  # Skip first row as it is column names
+        for row in reader:
+            samples.append((row[0], join(image_dir, f'{row[0]}.jpg'), row[1].split(' ')))
 
     # Check all images exists and create labels list
     labels = []
     for sample in samples:
         if not exists(sample[1]):
-            print("WARNING: {} does not exist".format(sample[1]))
+            print(f"WARNING: {sample[1]} does not exist")
 
         for label in sample[2]:
             if label not in labels:
@@ -59,18 +97,28 @@ def get_dataset(image_dir, labels_csv):
     return img_label_ds
 
 
-if __name__ == "__main__":
-    image_dir = '/project/def-bengioy/hrb/rainforest/fixed-train-jpg/'
-    labels_csv = '/project/def-bengioy/hrb/rainforest/train_v2.csv'
-    dataset = get_dataset(image_dir, labels_csv)
+def get_labels_distribution(labels_csv):
+    """
+    Returns a dict where the keys are the labels and the values are the number of occurences.
 
-    for n, sample in enumerate(dataset.take(4)):
-        image, label = sample[0], sample[1]
-        image = image.numpy()
-        plt.imshow(image)
-        plt.grid(False)
-        plt.xticks([])
-        plt.yticks([])
-        plt.title(label)
-        plt.show()
-        plt.close()
+    Parameters
+    ----------
+    labels_csv : str
+        Path to the csv file
+
+    Returns
+    -------
+        dict
+    """
+    # Read the csv
+    sample_labels = []
+    with open(labels_csv) as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        next(reader)  # Skip first row as it is column names
+        for row in reader:
+            sample_labels.append(row[1].split(' '))
+
+    # Count labels occurences
+    labels = Counter(x for xs in sample_labels for x in set(xs))
+
+    return labels

@@ -3,6 +3,7 @@ from PIL import Image
 import pytest
 
 from ecodse_funtime_alpha.data import get_dataset
+from ecodse_funtime_alpha.data import get_labels_distribution
 
 
 class TestDataset(object):
@@ -41,3 +42,20 @@ class TestDataset(object):
                 assert np.allclose(np.array([1, 1, 0, 0, 0]), sample[1].numpy())
             else:
                 assert np.allclose(np.array([0, 1, 1, 1, 1]), sample[1].numpy())
+
+    def test_labels_distribution(self, tmpdir):
+        labels_csv = str(tmpdir.join("train-jpg").join("train_v2.csv"))
+
+        labels = get_labels_distribution(labels_csv)
+
+        true_labels = {
+            'haze': 1,
+            'primary': 2,
+            'agriculture': 1,
+            'clear': 1,
+            'water': 1
+        }
+
+        for k, v in labels.items():
+            assert k in true_labels
+            assert true_labels[k] == v
