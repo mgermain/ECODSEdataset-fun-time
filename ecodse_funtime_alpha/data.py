@@ -67,24 +67,16 @@ def get_dataset(image_dir, labels_csv):
         next(reader)  # Skip first row as it is column names
         for row in reader:
             samples.append((row[0], join(image_dir, f'{row[0]}.jpg'), row[1].split(' ')))
+            if not exists(samples[-1][1]):
+                print(f"WARNING: {samples[-1][1]} does not exist")
 
-    # Check all images exists and create labels list
-    labels = []
-    for sample in samples:
-        if not exists(sample[1]):
-            print(f"WARNING: {sample[1]} does not exist")
-
-        for label in sample[2]:
-            if label not in labels:
-                labels.append(label)
-
-    mb = MultiLabelBinarizer(classes=labels)
-    mb.fit(labels)
+    # Create labels list
+    labels = sorted(list(set(sum(list(zip(*samples))[2], []))))
+    binarizer = MultiLabelBinarizer(classes=labels)
+    binarizer.fit(labels)
 
     # Transform all labels
-    transformed_labels = []
-    for sample in samples:
-        transformed_labels.append(mb.transform([sample[2]]).squeeze())
+    transformed_labels = list(map(lambda x: binarizer.transform([x[2]]).squeeze(), samples))
 
     # Create tensorflow dataset
     img_ds = tf.data.Dataset.from_tensor_slices([s[1] for s in samples])

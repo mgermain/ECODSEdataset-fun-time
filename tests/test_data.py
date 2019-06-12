@@ -50,9 +50,9 @@ class TestDataset(object):
 
         for i, sample in enumerate(dataset.take(2)):
             if i == 0:
-                assert np.allclose(np.array([1, 1, 0, 0, 0]), sample[1].numpy())
+                assert np.allclose(np.array([0, 0, 1, 1, 0]), sample[1].numpy())
             else:
-                assert np.allclose(np.array([0, 1, 1, 1, 1]), sample[1].numpy())
+                assert np.allclose(np.array([1, 1, 0, 1, 1]), sample[1].numpy())
 
     def test_labels_distribution(self, tmpdir):
         labels_csv = str(tmpdir.join("train-jpg").join("train_v2.csv"))
