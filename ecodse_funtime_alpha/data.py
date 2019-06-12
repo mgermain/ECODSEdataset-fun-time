@@ -72,6 +72,7 @@ def get_dataset(image_dir, labels_csv):
 
     # Create labels list
     labels = sorted(list(set(sum(list(zip(*samples))[2], []))))
+
     binarizer = MultiLabelBinarizer(classes=labels)
     binarizer.fit(labels)
 
