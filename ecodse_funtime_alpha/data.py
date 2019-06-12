@@ -1,5 +1,6 @@
 from collections import Counter
 import csv
+import numpy as np
 from os.path import join, exists
 
 import tensorflow as tf
@@ -71,7 +72,7 @@ def get_dataset(image_dir, labels_csv):
                 print(f"WARNING: {samples[-1][1]} does not exist")
 
     # Create labels list
-    labels = sorted(list(set(sum(list(zip(*samples))[2], []))))
+    labels = np.unique(np.concatenate(np.array(samples)[:, 2]))
 
     binarizer = MultiLabelBinarizer(classes=labels)
     binarizer.fit(labels)
