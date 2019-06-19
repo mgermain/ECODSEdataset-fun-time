@@ -20,14 +20,15 @@ def batch_dataset(dataset, nepoch, batchsize):
     return dataset
 
 
-def train_loop(dataset, model, optimizer):
-    for x, y in dataset.batch(5):
+def train_loop(dataset, model, optimizer, nepoch, batchsize):
+    dataset = batch_dataset(dataset, nepoch, batchsize)
+    for x, y in dataset:
         with tf.GradientTape() as tape:
-            predictions = model(tf.squeeze(x))
+            predictions = model(x)
             loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=tf.cast(y, tf.float32), logits=predictions)
         gradients = tape.gradient(loss, model.trainable_variables)
         optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-        print(loss)
+    return model
 
 
 def fit_loop(dataset, model, optimizer, nepoch, batchsize):
@@ -38,6 +39,7 @@ def fit_loop(dataset, model, optimizer, nepoch, batchsize):
                   loss=tf.keras.losses.binary_crossentropy,
                   metrics=["accuracy"])
     model.fit(dataset, epochs=nepoch, steps_per_epoch=nstep)
+    return model
 
 
 def get_args(args):
@@ -97,4 +99,4 @@ if __name__ == "__main__":
     # model = models.TestMLP(10, 9)
     model = models.SimpleCNN(args.kernels, args.ksize, 9)
     optimizer = tf.keras.optimizers.Adam(lr=args.lr)
-    fit_loop(dataset, model, optimizer, args.nepoch, args.batchsize)
+    model = fit_loop(dataset, model, optimizer, args.nepoch, args.batchsize)
