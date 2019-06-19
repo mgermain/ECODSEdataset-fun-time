@@ -1,7 +1,8 @@
+import os
+
 import numpy as np
-from os.path import join
-from PIL import Image
 import pytest
+from PIL import Image
 
 from ecodse_funtime_alpha.data import get_dataset
 from ecodse_funtime_alpha.data import get_labels_distribution
@@ -96,7 +97,7 @@ class TestDataset(object):
         labels_csv = str(p)
         get_dataset(image_dir, labels_csv)
 
-        full_name = join(image_dir, f"{missing_name}.jpg")
+        full_name = os.path.join(image_dir, f"{missing_name}.jpg")
         captured = capsys.readouterr()
 
         assert captured.out == f"WARNING: {full_name} does not exist\n"

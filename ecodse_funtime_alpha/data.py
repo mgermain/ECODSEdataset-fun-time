@@ -1,12 +1,10 @@
-from collections import Counter
 import csv
-from os.path import join, exists
-import random
+import os
+from collections import Counter
 
 import numpy as np
-from sklearn.preprocessing import MultiLabelBinarizer
-
 import tensorflow as tf
+from sklearn.preprocessing import MultiLabelBinarizer
 
 tf.enable_eager_execution()
 
@@ -68,8 +66,8 @@ def get_dataset(image_dir, labels_csv):
         reader = csv.reader(csvfile, delimiter=',')
         next(reader)  # Skip first row as it is column names
         for row in reader:
-            samples.append((row[0], join(image_dir, f'{row[0]}.jpg'), row[1].split(' ')))
-            if not exists(samples[-1][1]):
+            samples.append((row[0], os.path.join(image_dir, f'{row[0]}.jpg'), row[1].split(' ')))
+            if not os.path.exists(samples[-1][1]):
                 print(f"WARNING: {samples[-1][1]} does not exist")
 
     # Create labels list
@@ -166,7 +164,7 @@ def split_train_val_test(labels_csv, output_dir, train_size=0.6, val_size=0.2, s
     Note
     ----
     The output csv will be named as:
-    `join(output_dir, f'{set}_seed_{seed}.csv')`
+    `os.path.join(output_dir, f'{set}_seed_{seed}.csv')`
 
     The proportion of the data in the test set is defined as:
     `test_size = 1 - (train_size + val_size)`
@@ -204,8 +202,8 @@ def split_train_val_test(labels_csv, output_dir, train_size=0.6, val_size=0.2, s
             samples.append(row)
 
     # Shuffle the data
-    random.seed(seed)
-    random.shuffle(samples)
+    rs = np.random.RandomState(seed=seed)
+    rs.shuffle(samples)
 
     # Split the data
     train_set = []
@@ -225,9 +223,9 @@ def split_train_val_test(labels_csv, output_dir, train_size=0.6, val_size=0.2, s
             current_labels_dist[s[1]] -= 1
 
     # Write the split datasets
-    train_csv = join(output_dir, f'train_seed_{seed}.csv')
-    val_csv = join(output_dir, f'val_seed_{seed}.csv')
-    test_csv = join(output_dir, f'test_seed_{seed}.csv')
+    train_csv = os.path.join(output_dir, f'train_seed_{seed}.csv')
+    val_csv = os.path.join(output_dir, f'val_seed_{seed}.csv')
+    test_csv = os.path.join(output_dir, f'test_seed_{seed}.csv')
 
     write_csv(train_csv, header, train_set)
     write_csv(val_csv, header, val_set)
