@@ -28,7 +28,6 @@ def fit_loop(dataset, model, optimizer, nepoch, batchsize):
                   loss=tf.keras.losses.binary_crossentropy,
                   metrics=["accuracy"])
     model.fit(dataset, epochs=nepoch, steps_per_epoch=nstep)
-    return dataset
 
 
 def get_args(args):

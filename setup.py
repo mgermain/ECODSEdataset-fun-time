@@ -16,5 +16,5 @@ setup(
     ],
     packages=find_packages(exclude=['docs', 'tests']),
     install_requires=['tensorflow==1.13', 'matplotlib', 'numpy', 'comet-ml', 'scikit-learn'],
-    extras_require={'test': ['flake8', 'pytest', 'pytest-cov', 'pillow']}
+    extras_require={'test': ['flake8', 'pytest', 'pytest-cov', 'pillow', 'codecov']}
 )
