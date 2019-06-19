@@ -1,8 +1,12 @@
+import math
 import os
 
 import pytest
+import tensorflow as tf
 
 from ecodse_funtime_alpha.train import get_args
+from ecodse_funtime_alpha.train import batch_dataset
+from ecodse_funtime_alpha.train import fit_loop
 
 
 class TestArgparse(object):
@@ -41,3 +45,31 @@ class TestArgparse(object):
         fakearg = ['--labelpath=invalid.csv']
         args = get_args(fakearg)
         assert not os.path.exists(args.labelpath)
+
+
+class TestBatchDataset(object):
+    @pytest.fixture(autouse=True)
+    def mock_file(self):
+        self.nimage = 10
+        self.nlabel = 8
+        img_ds = tf.data.Dataset.from_tensor_slices(tf.zeros([self.nimage, 28 * 28 * 3]))
+        label_ds = tf.data.Dataset.from_tensor_slices(tf.zeros([self.nimage, self.nlabel]))
+        self.dataset = tf.data.Dataset.zip((img_ds, label_ds))
+
+    def test_dataset(self):
+        batchsize = 4
+        nepoch = 3
+        dataset = batch_dataset(self.dataset, nepoch, batchsize)
+        # get sizes of mini-batches in one epoch
+        size_of_batch = [batchsize] * (self.nimage // batchsize)
+        # add remainder if number of examples is not a multiple of batchsize
+        size_of_batch += [self.nimage % batchsize] if self.nimage % batchsize != 0 else []
+        # multiply by number of epochs
+        size_of_batch = [*size_of_batch] * nepoch
+        assert [x[0].shape[0].value for x in dataset] == size_of_batch
+
+    def test_datasetsize(self):
+        batchsize = 4
+        nepoch = 3
+        dataset = batch_dataset(self.dataset, nepoch, batchsize)
+        assert tf.data.experimental.cardinality(dataset).numpy() == math.ceil(self.nimage // batchsize)

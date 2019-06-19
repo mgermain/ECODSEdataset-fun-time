@@ -10,29 +10,25 @@ import ecodse_funtime_alpha.models as models
 tf.enable_eager_execution()
 
 
-def train_loop(dataset, model, optimizer):
-    for x, y in dataset.batch(5):
-        with tf.GradientTape() as tape:
-            predictions = model(tf.squeeze(x))
-            loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=tf.cast(y, tf.float32), logits=predictions)
-        gradients = tape.gradient(loss, model.trainable_variables)
-        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-        print(loss)
-
-
-def fit_loop(dataset, model, optimizer, nepoch, batchsize):
-    # number of steps in an epoch is len(dataset) / batchsize (math.ceil for the remainder)
-    nstep = math.ceil(tf.data.experimental.cardinality(dataset).numpy() / batchsize)
+def batch_dataset(dataset, nepoch, batchsize):
     # shuffling the dataset before mini-batches to shuffle elements and not mini-batches
     dataset = dataset.shuffle(buffer_size=10 * batchsize)
     # split into mini-batches
     dataset = dataset.batch(batchsize)
     # repeat for multiple epochs; the earlier shuffle is different for each epoch
     dataset = dataset.repeat(nepoch)
+    return dataset
+
+
+def fit_loop(dataset, model, optimizer, nepoch, batchsize):
+    # number of steps in an epoch is len(dataset) / batchsize (math.ceil for the remainder)
+    nstep = math.ceil(tf.data.experimental.cardinality(dataset).numpy() / batchsize)
+    dataset = batch_dataset(dataset, nepoch, batchsize)
     model.compile(optimizer=optimizer,
                   loss=tf.keras.losses.binary_crossentropy,
                   metrics=["accuracy"])
     model.fit(dataset, epochs=nepoch, steps_per_epoch=nstep)
+    return dataset
 
 
 def get_args(args):
@@ -92,7 +88,4 @@ if __name__ == "__main__":
     # model = models.TestMLP(10, 9)
     model = models.SimpleCNN(args.kernels, args.ksize, 9)
     optimizer = tf.keras.optimizers.Adam(lr=args.lr)
-    fit_loop(dataset, model, optimizer, args.nepoch, args.batchsize)
-    # nepoch = 2
-    # for _ in range(nepoch):
-    #     train_loop(dataset, model, optimizer)
+    _, _ = fit_loop(dataset, model, optimizer, args.nepoch, args.batchsize)
