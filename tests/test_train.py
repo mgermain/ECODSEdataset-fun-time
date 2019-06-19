@@ -1,11 +1,15 @@
 import math
 import os
 
+from copy import deepcopy
+
 import pytest
 import tensorflow as tf
 
-from ecodse_funtime_alpha.train import get_args
 from ecodse_funtime_alpha.train import batch_dataset
+from ecodse_funtime_alpha.train import fit_loop
+from ecodse_funtime_alpha.train import get_args
+from ecodse_funtime_alpha.train import train_loop
 
 
 class TestArgparse(object):
@@ -72,3 +76,30 @@ class TestBatchDataset(object):
         nepoch = 3
         dataset = batch_dataset(self.dataset, nepoch, batchsize)
         assert tf.data.experimental.cardinality(dataset).numpy() == math.ceil(self.nimage / batchsize) * nepoch
+
+
+class TestFitLoop(object):
+    @pytest.fixture(autouse=True)
+    def mock_file(self):
+        self.nimage = 1
+        self.nlabel = 8
+        img_ds = tf.data.Dataset.from_tensor_slices(tf.random.uniform([self.nimage, 28 * 28 * 3]))
+        label_ds = tf.data.Dataset.from_tensor_slices(tf.random.uniform([self.nimage, self.nlabel]))
+        self.dataset = tf.data.Dataset.zip((img_ds, label_ds))
+        self.model = tf.keras.Sequential([tf.keras.layers.Dense(self.nlabel, input_shape=(28 * 28 * 3,))])
+
+    def test_fitvarchanged(self):
+        before = deepcopy(self.model.trainable_variables)
+        model = fit_loop(self.dataset, self.model, tf.keras.optimizers.Adam(lr=0.1), 1, 1)
+        after = model.trainable_variables
+        for b, a in zip(before, after):
+            # make sure something changed
+            assert (b.numpy() != a.numpy()).any()
+
+    def test_trainvarchanged(self):
+        before = deepcopy(self.model.trainable_variables)
+        model = train_loop(self.dataset, self.model, tf.train.AdamOptimizer(learning_rate=0.1), 1, 1)
+        after = model.trainable_variables
+        for b, a in zip(before, after):
+            # make sure something changed
+            assert (b.numpy() != a.numpy()).any()
