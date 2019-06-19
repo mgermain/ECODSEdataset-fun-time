@@ -6,7 +6,6 @@ import tensorflow as tf
 
 from ecodse_funtime_alpha.train import get_args
 from ecodse_funtime_alpha.train import batch_dataset
-from ecodse_funtime_alpha.train import fit_loop
 
 
 class TestArgparse(object):
@@ -72,4 +71,4 @@ class TestBatchDataset(object):
         batchsize = 4
         nepoch = 3
         dataset = batch_dataset(self.dataset, nepoch, batchsize)
-        assert tf.data.experimental.cardinality(dataset).numpy() == math.ceil(self.nimage // batchsize)
+        assert tf.data.experimental.cardinality(dataset).numpy() == math.ceil(self.nimage / batchsize) * nepoch
