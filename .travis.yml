@@ -12,7 +12,7 @@ before_install:
 install:
   - if [[ $TEST_SUITE == "static" ]]; then conda install flake8; fi
   - if [[ $TEST_SUITE == "unit" ]]; then conda install ipython tensorflow=1.13 matplotlib numpy wheel scikit-learn pytest pytest-cov pillow; fi
-  - if [[ $TEST_SUITE == "unit" ]]; then pip install comet-ml; fi
+  - if [[ $TEST_SUITE == "unit" ]]; then pip install comet-ml codecov; fi
   - if [[ $TEST_SUITE == "unit" ]]; then pip install -e . --no-deps; fi
 
 env:
@@ -22,3 +22,6 @@ env:
 script:
   - if [[ $TEST_SUITE == "static" ]]; then flake8 --ignore E501,F; fi
   - if [[ $TEST_SUITE == "unit" ]]; then pytest --cov=./; fi
+
+after_success:
+  - codecov
