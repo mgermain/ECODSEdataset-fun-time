@@ -105,8 +105,6 @@ class TestFitLoop(object):
         batch_size = 1
         before = deepcopy(self.model.trainable_variables)
         model = train_loop(self.dataset, self.model, tf.train.AdamOptimizer(learning_rate=0.1), nepoch, batch_size)
-        before = deepcopy(self.model.trainable_variables)
-        model = train_loop(self.dataset, self.model, tf.train.AdamOptimizer(learning_rate=0.1), 1, 1)
         after = model.trainable_variables
         for b, a in zip(before, after):
             # make sure something changed
