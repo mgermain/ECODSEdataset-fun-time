@@ -1,8 +1,11 @@
 import math
 import os
+import subprocess
 
 from copy import deepcopy
+from PIL import Image
 
+import numpy as np
 import pytest
 import tensorflow as tf
 
@@ -109,3 +112,29 @@ class TestFitLoop(object):
         for b, a in zip(before, after):
             # make sure something changed
             assert (b.numpy() != a.numpy()).any()
+
+
+class TestTrainMain(object):
+    @pytest.fixture(autouse=True)
+    def mock_files(self, tmpdir):
+        self.img_size = 256
+        self.img_channel = 3
+        self.img_colorpixel = 128
+        self.img_color = 255
+
+        p = tmpdir.mkdir("train-jpg").join("train_v2.csv")
+        p.write_text("image_name,tags\ntrain_0,a b c d e\ntrain_1,f g h i", encoding="utf-8")
+
+        img = np.zeros((self.img_size, self.img_size, self.img_channel), dtype=np.uint8)
+        img[self.img_colorpixel] = self.img_color
+
+        Image.fromarray(img).save(str(tmpdir.join("train-jpg").join("train_0.jpg")), quality=100)
+        Image.fromarray(img).save(str(tmpdir.join("train-jpg").join("train_1.jpg")), quality=100)
+
+    def test_main(self, tmpdir):
+        imagedir = str(tmpdir.join("train-jpg"))
+        labelpath = str(tmpdir.join("train-jpg").join("train_v2.csv"))
+        nepoch = 1
+        batchsize = 2
+        fakearg = ["--imagepath", imagedir, "--labelpath", labelpath, "--nepoch", str(nepoch), "--batchsize", str(batchsize)]
+        assert subprocess.call(["python", "ecodse_funtime_alpha/train.py", *fakearg]) == 0
