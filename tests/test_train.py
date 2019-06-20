@@ -1,11 +1,15 @@
 import math
 import os
 
+from copy import deepcopy
+
 import pytest
 import tensorflow as tf
 
-from ecodse_funtime_alpha.train import get_args
 from ecodse_funtime_alpha.train import batch_dataset
+from ecodse_funtime_alpha.train import fit_loop
+from ecodse_funtime_alpha.train import get_args
+from ecodse_funtime_alpha.train import train_loop
 
 
 class TestArgparse(object):
@@ -50,25 +54,58 @@ class TestBatchDataset(object):
     @pytest.fixture(autouse=True)
     def mock_file(self):
         self.nimage = 10
-        self.nlabel = 8
-        img_ds = tf.data.Dataset.from_tensor_slices(tf.zeros([self.nimage, 28 * 28 * 3]))
-        label_ds = tf.data.Dataset.from_tensor_slices(tf.zeros([self.nimage, self.nlabel]))
+        self.out_size = 9
+        self.image_size = 256 * 256 * 3
+        img_ds = tf.data.Dataset.from_tensor_slices(tf.zeros([self.nimage, self.image_size]))
+        label_ds = tf.data.Dataset.from_tensor_slices(tf.zeros([self.nimage, self.out_size]))
         self.dataset = tf.data.Dataset.zip((img_ds, label_ds))
 
     def test_dataset(self):
-        batchsize = 4
+        batch_size = 4
         nepoch = 3
-        dataset = batch_dataset(self.dataset, nepoch, batchsize)
+        dataset = batch_dataset(self.dataset, nepoch, batch_size)
         # get sizes of mini-batches in one epoch
-        size_of_batch = [batchsize] * (self.nimage // batchsize)
+        size_of_batch = [batch_size] * (self.nimage // batch_size)
         # add remainder if number of examples is not a multiple of batchsize
-        size_of_batch += [self.nimage % batchsize] if self.nimage % batchsize != 0 else []
+        size_of_batch += [self.nimage % batch_size] if self.nimage % batch_size != 0 else []
         # multiply by number of epochs
         size_of_batch = [*size_of_batch] * nepoch
         assert [x[0].shape[0].value for x in dataset] == size_of_batch
 
     def test_datasetsize(self):
-        batchsize = 4
-        nepoch = 3
-        dataset = batch_dataset(self.dataset, nepoch, batchsize)
-        assert tf.data.experimental.cardinality(dataset).numpy() == math.ceil(self.nimage / batchsize) * nepoch
+        batch_size = 4
+        nepoch = 2
+        dataset = batch_dataset(self.dataset, nepoch, batch_size)
+        assert tf.data.experimental.cardinality(dataset).numpy() == math.ceil(self.nimage / batch_size) * nepoch
+
+
+class TestFitLoop(object):
+    @pytest.fixture(autouse=True)
+    def mock_file(self):
+        self.nimage = 1
+        self.in_size = 256 * 256 * 3
+        self.out_size = 9
+        img_ds = tf.data.Dataset.from_tensor_slices(tf.random.uniform([self.nimage, self.in_size]))
+        label_ds = tf.data.Dataset.from_tensor_slices(tf.random.uniform([self.nimage, self.out_size]))
+        self.dataset = tf.data.Dataset.zip((img_ds, label_ds))
+        self.model = tf.keras.Sequential([tf.keras.layers.Dense(self.out_size, input_shape=(self.in_size,))])
+
+    def test_fitvarchanged(self):
+        nepoch = 1
+        batch_size = 1
+        before = deepcopy(self.model.trainable_variables)
+        model = fit_loop(self.dataset, self.model, tf.keras.optimizers.Adam(lr=0.1), nepoch, batch_size)
+        after = model.trainable_variables
+        for b, a in zip(before, after):
+            # make sure something changed
+            assert (b.numpy() != a.numpy()).any()
+
+    def test_trainvarchanged(self):
+        nepoch = 1
+        batch_size = 1
+        before = deepcopy(self.model.trainable_variables)
+        model = train_loop(self.dataset, self.model, tf.train.AdamOptimizer(learning_rate=0.1), nepoch, batch_size)
+        after = model.trainable_variables
+        for b, a in zip(before, after):
+            # make sure something changed
+            assert (b.numpy() != a.numpy()).any()
