@@ -1,9 +1,9 @@
 import math
 import os
-from PIL import Image
 import subprocess
 
 from copy import deepcopy
+from PIL import Image
 
 import numpy as np
 import pytest
@@ -114,7 +114,7 @@ class TestFitLoop(object):
             assert (b.numpy() != a.numpy()).any()
 
 
-class TestMain(object):
+class TestTrainMain(object):
     @pytest.fixture(autouse=True)
     def mock_files(self, tmpdir):
         self.img_size = 256
