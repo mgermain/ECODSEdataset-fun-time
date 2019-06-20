@@ -52,7 +52,7 @@ def train_loop(dataset, model, optimizer, nepoch, batchsize):
     model : tf.keras.Model
         an initialized model working in eager execution mode
     optimizer : tf.train.Optimizer
-        tensorflow optimizer (e.g. tf.train.AdamOptimizer()) to train the model
+        tensorflow optimizer (e.g. `tf.train.AdamOptimizer()`) to train the model
     nepoch : int
         number of epochs to train the model
     batchsize : int
@@ -84,7 +84,7 @@ def fit_loop(dataset, model, optimizer, nepoch, batchsize):
     model : tf.keras.Model
         an initialized model working in eager execution mode
     optimizer : tf.keras.optimizers
-        tf.keras optimizer (e.g. tf.keras.optimizers.Adam()) to train the model
+        tf.keras optimizer (e.g. `tf.keras.optimizers.Adam()`) to train the model
     nepoch : int
         number of epochs to train the model
     batchsize : int
@@ -116,7 +116,7 @@ def get_args(args):
 
     Returns
     -------
-    ArgumenterParser object
+    ArgumentParser object
        object containing the input arguments
     """
     argparser = argparse.ArgumentParser()

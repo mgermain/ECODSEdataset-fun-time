@@ -21,7 +21,7 @@ class TestMLP(tf.keras.Model):
 
     def __init__(self, hiddensize, outsize):
         """
-        Class constructure
+        Class construction
 
         Parameters
         ----------
