@@ -11,6 +11,26 @@ tf.enable_eager_execution()
 
 
 def batch_dataset(dataset, nepoch, batchsize):
+    """
+    Shuffle, repeat and split a dataset into mini-batches.
+    To avoid running out of data, the original dataset is repeated nepoch times.
+    All mini-batches have the same size, except the last one (remainder) in each epoch.
+    Data are shuffled randomly in 1 epoch (each data element occurs once in 1 epoch).
+
+    Parameters
+    ----------
+    dataset : tf dataset
+        initial dataset, unshuffled, not repeated and not split into mini-batches
+    nepoch : int
+        number of epochs that will be used in the training
+    batchsize : int
+        size of the mini-batches. Should be lower than the number of elements in the dataset
+
+    Returns
+    -------
+    tf dataset
+        shuffled dataset split into mini-batches
+    """
     # shuffling the dataset before mini-batches to shuffle elements and not mini-batches
     dataset = dataset.shuffle(buffer_size=10 * batchsize)
     # split into mini-batches
@@ -21,6 +41,28 @@ def batch_dataset(dataset, nepoch, batchsize):
 
 
 def train_loop(dataset, model, optimizer, nepoch, batchsize):
+    """
+    Training loop feeding the mini-batches in the dataset in the model one at a time.
+    Gradient is applied manually on the model using the optimizer.
+
+    Parameters
+    ----------
+    dataset : tf dataset
+        original dataset (unshuffled, not-split into mini-batches)
+    model : tf.keras.Model
+        an initialized model working in eager execution mode
+    optimizer : tf.train.Optimizer
+        tensorflow optimizer (e.g. `tf.train.AdamOptimizer()`) to train the model
+    nepoch : int
+        number of epochs to train the model
+    batchsize : int
+        size of the mini-batches
+
+    Returns
+    -------
+    tf.keras.Model
+        model after training
+    """
     dataset = batch_dataset(dataset, nepoch, batchsize)
     for x, y in dataset:
         with tf.GradientTape() as tape:
@@ -32,6 +74,27 @@ def train_loop(dataset, model, optimizer, nepoch, batchsize):
 
 
 def fit_loop(dataset, model, optimizer, nepoch, batchsize):
+    """
+    Training loop fitting the model using the keras .fit() method
+
+    Parameters
+    ----------
+    dataset : tf dataset
+        original dataset (unshuffled, not-split into mini-batches)
+    model : tf.keras.Model
+        an initialized model working in eager execution mode
+    optimizer : tf.keras.optimizers
+        tf.keras optimizer (e.g. `tf.keras.optimizers.Adam()`) to train the model
+    nepoch : int
+        number of epochs to train the model
+    batchsize : int
+        size of the mini-batches
+
+    Returns
+    -------
+    tf.keras.Model
+        model after training
+    """
     # number of steps in an epoch is len(dataset) / batchsize (math.ceil for the remainder)
     nstep = math.ceil(tf.data.experimental.cardinality(dataset).numpy() / batchsize)
     dataset = batch_dataset(dataset, nepoch, batchsize)
@@ -43,6 +106,19 @@ def fit_loop(dataset, model, optimizer, nepoch, batchsize):
 
 
 def get_args(args):
+    """
+    read and parse the arguments
+
+    Parameters
+    ----------
+    args : sys.argv
+        arguments specified by the user
+
+    Returns
+    -------
+    ArgumentParser object
+       object containing the input arguments
+    """
     argparser = argparse.ArgumentParser()
     def_impath = '../../rainforest/fixed-train-jpg/'
     argparser.add_argument('--imagepath',
