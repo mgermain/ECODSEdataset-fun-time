@@ -21,7 +21,7 @@ env:
 
 script:
   - if [[ $TEST_SUITE == "static" ]]; then flake8 --ignore E501,F; fi
-  - if [[ $TEST_SUITE == "unit" ]]; then pytest --cov=./; fi
+  - if [[ $TEST_SUITE == "unit" ]]; then pytest --cov=./ecodse_funtime_alpha; fi
 
 after_success:
   - codecov
