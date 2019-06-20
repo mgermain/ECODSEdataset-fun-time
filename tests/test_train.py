@@ -73,24 +73,16 @@ class TestBatchDataset(object):
         assert [x[0].shape[0].value for x in dataset] == size_of_batch
 
     def test_datasetsize(self):
-<<<<<<< HEAD
         batch_size = 4
         nepoch = 2
         dataset = batch_dataset(self.dataset, nepoch, batch_size)
         assert tf.data.experimental.cardinality(dataset).numpy() == math.ceil(self.nimage / batch_size) * nepoch
-=======
-        batchsize = 4
-        nepoch = 3
-        dataset = batch_dataset(self.dataset, nepoch, batchsize)
-        assert tf.data.experimental.cardinality(dataset).numpy() == math.ceil(self.nimage / batchsize) * nepoch
->>>>>>> e5395168872f91169c686400a784d5b04bdca56d
 
 
 class TestFitLoop(object):
     @pytest.fixture(autouse=True)
     def mock_file(self):
         self.nimage = 1
-<<<<<<< HEAD
         self.in_size = 256 * 256 * 3
         self.out_size = 9
         img_ds = tf.data.Dataset.from_tensor_slices(tf.random.uniform([self.nimage, self.in_size]))
@@ -103,32 +95,18 @@ class TestFitLoop(object):
         batch_size = 1
         before = deepcopy(self.model.trainable_variables)
         model = fit_loop(self.dataset, self.model, tf.keras.optimizers.Adam(lr=0.1), nepoch, batch_size)
-=======
-        self.nlabel = 8
-        img_ds = tf.data.Dataset.from_tensor_slices(tf.random.uniform([self.nimage, 28 * 28 * 3]))
-        label_ds = tf.data.Dataset.from_tensor_slices(tf.random.uniform([self.nimage, self.nlabel]))
-        self.dataset = tf.data.Dataset.zip((img_ds, label_ds))
-        self.model = tf.keras.Sequential([tf.keras.layers.Dense(self.nlabel, input_shape=(28 * 28 * 3,))])
-
-    def test_fitvarchanged(self):
-        before = deepcopy(self.model.trainable_variables)
-        model = fit_loop(self.dataset, self.model, tf.keras.optimizers.Adam(lr=0.1), 1, 1)
->>>>>>> e5395168872f91169c686400a784d5b04bdca56d
         after = model.trainable_variables
         for b, a in zip(before, after):
             # make sure something changed
             assert (b.numpy() != a.numpy()).any()
 
     def test_trainvarchanged(self):
-<<<<<<< HEAD
         nepoch = 1
         batch_size = 1
         before = deepcopy(self.model.trainable_variables)
         model = train_loop(self.dataset, self.model, tf.train.AdamOptimizer(learning_rate=0.1), nepoch, batch_size)
-=======
         before = deepcopy(self.model.trainable_variables)
         model = train_loop(self.dataset, self.model, tf.train.AdamOptimizer(learning_rate=0.1), 1, 1)
->>>>>>> e5395168872f91169c686400a784d5b04bdca56d
         after = model.trainable_variables
         for b, a in zip(before, after):
             # make sure something changed
