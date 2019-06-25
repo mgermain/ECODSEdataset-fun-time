@@ -1,0 +1,7 @@
+# Requirements for unit tests
+-r pip.txt
+
+pytest
+pytest-cov
+pillow
+codecov

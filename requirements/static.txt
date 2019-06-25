@@ -1,0 +1,2 @@
+# Requirements for PEP8 testing
+flake8
