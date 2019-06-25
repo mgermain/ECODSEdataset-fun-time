@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/mgermain/ECODSEdataset-fun-time.svg?branch=master)](https://travis-ci.org/mgermain/ECODSEdataset-fun-time)
 [![Coverage Status](https://codecov.io/gh/mgermain/ECODSEdataset-fun-time/branch/master/graph/badge.svg)](https://codecov.io/gh/mgermain/ECODSEdataset-fun-time/branch/master/)
+[![Documentation Status](https://readthedocs.org/projects/ecodsedataset-fun-time/badge/?version=latest)](https://ecodsedataset-fun-time.readthedocs.io/en/latest/?badge=latest)
 
 # Fun Time
 

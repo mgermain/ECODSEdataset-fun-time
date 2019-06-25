@@ -1,8 +1,11 @@
+dist: xenial
 language: python
+python:
+  - "3.7"
 
 install:
-  - if [[ $TEST_SUITE == "static" ]]; then pip install -e . [static]; fi
-  - if [[ $TEST_SUITE == "unit" ]]; then pip install -e . [unit]; fi
+  - if [[ $TEST_SUITE == "static" ]]; then pip install -e .[static]; fi
+  - if [[ $TEST_SUITE == "unit" ]]; then pip install -e .[unit]; fi
 
 env:
   - TEST_SUITE=static

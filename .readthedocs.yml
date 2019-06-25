@@ -1,4 +1,4 @@
-version: master
+version: 2
 formats: all
 sphinx:
   configuration: docs/conf.py
