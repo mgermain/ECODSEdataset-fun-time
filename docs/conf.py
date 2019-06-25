@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
+master_doc = 'index'
 project = 'Rainforest Funtime'
 copyright = '2019, Hadrien Bertrand, Simon Blackburn, Mathieu Germain'
 author = 'Hadrien Bertrand, Simon Blackburn, Mathieu Germain'

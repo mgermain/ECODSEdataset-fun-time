@@ -1,0 +1,4 @@
+# Reauirements for building the docs
+-r pip.txt
+
+sphinx

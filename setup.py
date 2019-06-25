@@ -1,6 +1,9 @@
 """Installation script."""
 from setuptools import setup, find_packages
 
+with open('requirements/pip.txt') as f:
+    requirements = f.read().splitlines()
+
 setup(
     name='ecodse-funtime-alpha',
     python_requires='>3.7',
@@ -15,6 +18,7 @@ setup(
         'Programming Language :: Python :: 3.7'
     ],
     packages=find_packages(exclude=['docs', 'tests']),
-    install_requires=['tensorflow==1.13', 'matplotlib', 'numpy', 'comet-ml', 'scikit-learn'],
-    extras_require={'test': ['flake8', 'pytest', 'pytest-cov', 'pillow', 'codecov']}
+    install_requires=requirements,
+    extras_require={'static': ['flake8'],
+                    'unit': ['pytest', 'pytest-cov', 'pillow', 'codecov']}
 )

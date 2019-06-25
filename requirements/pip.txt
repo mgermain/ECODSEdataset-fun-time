@@ -1,0 +1,6 @@
+# Standard requirements
+tensorflow~=1.13.1
+matplotlib
+numpy~=1.16.4
+scikit-learn
+comet-ml
